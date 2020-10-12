@@ -1,0 +1,231 @@
+Private Sub CommandButton1_Click()
+
+Dim i As Integer
+Dim j As Integer
+Dim nTot As Integer
+
+Dim cn As New ADODB.Connection
+Dim rs As New ADODB.Recordset
+Dim strSQL As String
+Dim strConn As String
+
+Dim sheetname As String
+
+sheetname = "Lotto"
+
+With Sheets(sheetname)
+
+Dim MoneyWin1 As Double
+Dim MoneyWin2 As Double
+Dim MoneyWin3 As Double
+Dim MoneyWin4 As Double
+Dim MoneyWin5 As Double
+
+nTot = Application.WorksheetFunction.CountA(Sheets(sheetname).Range("B11:B1048576"))
+
+'strConn = "Driver={SQL Server};Server=101.101.162.207,1433;Database=hokimdb;UID=alluser;PWD=Readall!;"
+strConn = "DSN=hokimdb_local;UID=alluser;PWD=Readall!;DATABASE=hokimdb_local;"
+
+For i = 1 To nTot
+
+
+    MoneyWin1 = Left(Sheets(sheetname).Cells(10 + i, 5), Application.WorksheetFunction.Find("원", Sheets(sheetname).Cells(10 + i, 5)) - 1)
+    MoneyWin2 = Left(Sheets(sheetname).Cells(10 + i, 7), Application.WorksheetFunction.Find("원", Sheets(sheetname).Cells(10 + i, 7)) - 1)
+    MoneyWin3 = Left(Sheets(sheetname).Cells(10 + i, 9), Application.WorksheetFunction.Find("원", Sheets(sheetname).Cells(10 + i, 9)) - 1)
+    MoneyWin4 = Left(Sheets(sheetname).Cells(10 + i, 11), Application.WorksheetFunction.Find("원", Sheets(sheetname).Cells(10 + i, 11)) - 1)
+    MoneyWin5 = Left(Sheets(sheetname).Cells(10 + i, 13), Application.WorksheetFunction.Find("원", Sheets(sheetname).Cells(10 + i, 13)) - 1)
+
+'    strSQL = "INSERT INTO hokimdb.dbo.lotto_database(num, publishdate, numwin1, moneywin1, numwin2, moneywin2, numwin3, moneywin3, numwin4, moneywin4, numwin5, moneywin5, first_n, second_n, third_n, fourth_n, fifth_n, sixth_n, bonus_n) values" & vbCrLf
+    strSQL = "INSERT INTO hokimdb_local.dbo.lotto_database(num, publishdate, numwin1, moneywin1, numwin2, moneywin2, numwin3, moneywin3, numwin4, moneywin4, numwin5, moneywin5, first_n, second_n, third_n, fourth_n, fifth_n, sixth_n, bonus_n) values" & vbCrLf
+    strSQL = strSQL & "('" & .Cells(10 + i, 2) & "'," 'Num
+    strSQL = strSQL & "'" & .Cells(10 + i, 3) & "'," 'Date
+    strSQL = strSQL & "'" & .Cells(10 + i, 4) & "'," 'NumWin1
+    strSQL = strSQL & "'" & MoneyWin1 & "'," 'MoneyWin1
+    strSQL = strSQL & "'" & .Cells(10 + i, 6) & "'," 'NumWin2
+    strSQL = strSQL & "'" & MoneyWin2 & "'," 'MonWin2
+    strSQL = strSQL & "'" & .Cells(10 + i, 8) & "',"
+    strSQL = strSQL & "'" & MoneyWin3 & "',"
+    strSQL = strSQL & "'" & .Cells(10 + i, 10) & "',"
+    strSQL = strSQL & "'" & MoneyWin4 & "',"
+    strSQL = strSQL & "'" & .Cells(10 + i, 12) & "',"
+    strSQL = strSQL & "'" & MoneyWin5 & "',"
+    strSQL = strSQL & "'" & .Cells(10 + i, 14) & "',"
+    strSQL = strSQL & "'" & .Cells(10 + i, 15) & "',"
+    strSQL = strSQL & "'" & .Cells(10 + i, 16) & "',"
+    strSQL = strSQL & "'" & .Cells(10 + i, 17) & "',"
+    strSQL = strSQL & "'" & .Cells(10 + i, 18) & "',"
+    strSQL = strSQL & "'" & .Cells(10 + i, 19) & "',"
+    strSQL = strSQL & "'" & .Cells(10 + i, 20) & "')" & vbCrLf
+
+
+    Debug.Print strSQL
+    rs.Open strSQL, strConn
+
+
+Next i
+
+Set rs = Nothing
+  
+End With
+
+MsgBox "완료"
+
+
+End Sub
+
+Private Sub CommandButton2_Click()
+
+Dim rs As New ADODB.Recordset
+Dim strSQL As String
+Dim strConn As String
+
+Dim sheetname As String
+
+sheetname = "Lotto"
+
+Dim i As Integer
+Dim numwin As Integer
+
+'strConn = "Driver={SQL Server};Server=101.101.162.207,1433;Database=hokimdb;UID=alluser;PWD=Readall!;"
+strConn = "DSN=hokimdb_local;UID=alluser;PWD=Readall!;DATABASE=hokimdb_local;"
+
+With Sheets(sheetname)
+
+'1 num W/O bonus
+For i = 1 To 45
+
+    numwin = .Cells(10 + i, 22)
+
+    'strSQL = "select count(*) as ncount from hokimdb.dbo.lotto_database" & vbCrLf
+    strSQL = "select count(*) as ncount from hokimdb_local.dbo.lotto_database" & vbCrLf
+    strSQL = strSQL & "where first_n = '" & numwin & "' or second_n = '" & numwin & "' or third_n = '" & numwin & "' or fourth_n = '" & numwin & "' or fifth_n = '" & numwin & "' or sixth_n = '" & numwin & "'" & vbCrLf
+        
+    rs.Open strSQL, strConn
+    
+    If rs.EOF Then
+        MsgBox "조회조건에 해당하는 자료가 없습니다."
+    Else
+        .Cells(10 + i, 23) = rs!ncount
+    End If
+    
+    rs.Close
+
+Next i
+
+'2 num bonus
+For i = 1 To 45
+
+    numwin = .Cells(10 + i, 22)
+
+    'strSQL = "select count(*) as ncount from hokimdb.dbo.lotto_database" & vbCrLf
+    strSQL = "select count(*) as ncount from hokimdb_local.dbo.lotto_database" & vbCrLf
+    strSQL = strSQL & "where bonus_n = '" & numwin & "'" & vbCrLf
+        
+    rs.Open strSQL, strConn
+    
+    If rs.EOF Then
+        MsgBox "조회조건에 해당하는 자료가 없습니다."
+    Else
+        .Cells(10 + i, 24) = rs!ncount
+    End If
+    
+    rs.Close
+
+Next i
+
+'3 Recent Date W/O bonus
+For i = 1 To 45
+
+    numwin = .Cells(10 + i, 22)
+
+    'strSQL = "select count(*) as ncount from hokimdb.dbo.lotto_database" & vbCrLf
+    strSQL = "select top 1 publishdate as recentdate from hokimdb_local.dbo.lotto_database" & vbCrLf
+    strSQL = strSQL & "where first_n = '" & numwin & "' or second_n = '" & numwin & "' or third_n = '" & numwin & "' or fourth_n = '" & numwin & "' or fifth_n = '" & numwin & "' or sixth_n = '" & numwin & "'" & vbCrLf
+    strSQL = strSQL & "order by num desc" & vbCrLf
+        
+    rs.Open strSQL, strConn
+    
+    If rs.EOF Then
+        MsgBox "조회조건에 해당하는 자료가 없습니다."
+    Else
+        .Cells(10 + i, 25) = rs!recentdate
+    End If
+    
+    rs.Close
+
+Next i
+
+
+'4 Recent Date W/ bonus
+For i = 1 To 45
+
+    numwin = .Cells(10 + i, 22)
+
+    'strSQL = "select count(*) as ncount from hokimdb.dbo.lotto_database" & vbCrLf
+    strSQL = "select top 1 publishdate as recentdate from hokimdb_local.dbo.lotto_database" & vbCrLf
+    strSQL = strSQL & "where bonus_n = '" & numwin & "'" & vbCrLf
+    strSQL = strSQL & "order by num desc" & vbCrLf
+        
+    rs.Open strSQL, strConn
+    
+    If rs.EOF Then
+        MsgBox "조회조건에 해당하는 자료가 없습니다."
+    Else
+        .Cells(10 + i, 26) = rs!recentdate
+    End If
+    
+    rs.Close
+
+Next i
+
+
+'5 Recent Date 2 W/O bonus
+For i = 1 To 45
+
+    numwin = .Cells(10 + i, 22)
+    recentdate = .Cells(10 + i, 25)
+
+    'strSQL = "select count(*) as ncount from hokimdb.dbo.lotto_database" & vbCrLf
+    strSQL = "select top 1 publishdate as recentdate from hokimdb_local.dbo.lotto_database" & vbCrLf
+    strSQL = strSQL & "where (first_n = '" & numwin & "' or second_n = '" & numwin & "' or third_n = '" & numwin & "' or fourth_n = '" & numwin & "' or fifth_n = '" & numwin & "' or sixth_n = '" & numwin & "')" & vbCrLf
+    strSQL = strSQL & "and publishdate <> '" & recentdate & "'" & vbCrLf
+    strSQL = strSQL & "order by num desc" & vbCrLf
+        
+    rs.Open strSQL, strConn
+    
+    If rs.EOF Then
+        MsgBox "조회조건에 해당하는 자료가 없습니다."
+    Else
+        .Cells(10 + i, 27) = rs!recentdate
+    End If
+    
+    rs.Close
+
+Next i
+
+'6 Recent Date 2 W/ bonus
+For i = 1 To 45
+
+    numwin = .Cells(10 + i, 22)
+    recentdate = .Cells(10 + i, 26)
+
+    'strSQL = "select count(*) as ncount from hokimdb.dbo.lotto_database" & vbCrLf
+    strSQL = "select top 1 publishdate as recentdate from hokimdb_local.dbo.lotto_database" & vbCrLf
+    strSQL = strSQL & "where (bonus_n = '" & numwin & "')" & vbCrLf
+    strSQL = strSQL & "and publishdate <> '" & recentdate & "'" & vbCrLf
+    strSQL = strSQL & "order by num desc" & vbCrLf
+        
+    rs.Open strSQL, strConn
+    
+    If rs.EOF Then
+        MsgBox "조회조건에 해당하는 자료가 없습니다."
+    Else
+        .Cells(10 + i, 28) = rs!recentdate
+    End If
+    
+    rs.Close
+
+Next i
+End With
+
+End Sub
