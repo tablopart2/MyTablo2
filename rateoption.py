@@ -115,6 +115,8 @@ for i in range(4*Mat):
 ON_DF = ma.exp(-methods(curve_date[1], allowExtrapolation=True)*curve_date[1])
 price = sum(Caplet)/ON_DF
 print(price)
+price = hw1f.normal_cap(curve_zero, curve_date, today_date, Mat, Notional, sigma, K)
+print(price)
 
 # Normal Swaption
 today_date = Ql.Date(1, 2, 2010)
@@ -160,6 +162,8 @@ swapR = (df_a-df_b)/temp
 
 d = (swapR-X)/(sigma*ma.sqrt(alpha))
 price = ((swapR-X)*norm.cdf(d)+sigma*ma.sqrt(alpha)*norm.pdf(d))*temp*Notional
+print(price)
+price = hw1f.normal_swaption(curve_zero, curve_date, today_date, Mat, swapMat, Notional, sigma, X)
 print(price)
 
 test_date0 = Ql.Date(10, 12, 2020)
